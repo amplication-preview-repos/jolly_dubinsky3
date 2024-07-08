@@ -1,0 +1,51 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DB_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Recommendation {
+  id             String   @id @default(cuid())
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  relevanceScore Float?
+  user           User?    @relation(fields: [userId], references: [id])
+  userId         String?
+  event          Event?   @relation(fields: [eventId], references: [id])
+  eventId        String?
+}
+
+model Event {
+  id              String                @id @default(cuid())
+  createdAt       DateTime              @default(now())
+  updatedAt       DateTime              @updatedAt
+  title           String?
+  description     String?
+  date            DateTime?
+  location        String?
+  categories      EnumEventCategories[]
+  popularity      Int?
+  recommendations Recommendation[]
+}
+
+model User {
+  id              String           @id @default(cuid())
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+  firstName       String?
+  lastName        String?
+  username        String           @unique
+  email           String?          @unique
+  password        String
+  roles           Json
+  name            String?
+  preferences     Json?
+  recommendations Recommendation[]
+}
+
+enum EnumEventCategories {
+  Option1
+}
